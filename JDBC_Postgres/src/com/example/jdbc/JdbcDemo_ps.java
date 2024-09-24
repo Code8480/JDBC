@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class JdbcDemo {
+public class JdbcDemo_ps {
 
 	public static void main(String[] args) throws Exception {
 		
@@ -18,28 +18,39 @@ public class JdbcDemo {
 		 * create statement 
 		 * execute statement 
 		 * process results 
-		 */		
+		 */
+		
+//		int personId = 101;
+//		String lastName = "Smith";
+//		String firstName = "John";
+//		String city = "Atlanta";
 		
 		String url ="jdbc:postgresql://localhost:5432/demo";
 		String uname = "postgres";
 		String pass = "257257";
-//		String sql = "select fname from person where personId = 101";
-//		String sql = "select * from person";
-//		String sql = "insert into person values (115,'Smith','Peter','Metro')";				
+		
+//		String sql = "insert into person values (?,?,?,?)";
 		
 		Class.forName("org.postgresql.Driver"); //optional - for loading and registering
 		Connection con = DriverManager.getConnection(url,uname, pass);
 		System.out.println("Connection Established...");
 		
-		java.sql.Statement stmt = con.createStatement();		
-//		int rows = stmt.executeUpdate(sql);
-//		System.out.println("Rows updated: "+rows);
-		ResultSet rSet = stmt.executeQuery("select * from person");		
-	
+//		java.sql.Statement stmt = con.createStatement();		
+			
+		PreparedStatement pstmt = con.prepareStatement("insert into person values (?,?,?,?)");
 		
-//		boolean status = stmt.execute(sql);
-//		System.out.println(" "+status);		
-
+		PreparedStatement pstmt1 = con.prepareStatement("select * from person where fname = ? and lname = ?");
+		pstmt.setInt(1, 130);
+		pstmt.setString(2, "Lu");
+		pstmt.setString(3, "Kim");
+		pstmt.setString(4, "Maryland");
+		
+		pstmt.execute();
+		
+		pstmt1.setString(1, "John");
+		pstmt1.setString(2, "Smith");
+		
+		ResultSet rSet = pstmt1.executeQuery();		
 		
 		while(rSet.next()) {
 			System.out.print(rSet.getInt(1)+" - ");
@@ -47,6 +58,8 @@ public class JdbcDemo {
 			System.out.print(rSet.getString(3)+ " - ");
 			System.out.println(rSet.getString(4));
 		}
+		
+		//Callable Statement
 		
 		con.close();
 		System.out.println("Connection Closed...");
